@@ -25,10 +25,6 @@ class Navbar extends React.Component {
                                          }}>
                                     Home
                                 </NavLink>
-
-                                <a className="nav-link" href="#">Features</a>
-                                <a className="nav-link" href="#">Pricing</a>
-                                <a className="nav-link disabled">Disabled</a>
                             </div>
                         </div>
                         <div className="text-end">
