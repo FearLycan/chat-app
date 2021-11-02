@@ -1,21 +1,53 @@
-import React from "react";
+import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import {Link} from "react-router-dom";
+import Auth from "../../services/auth";
 
 const Form = () => {
+    const [message, setMessage] = useState("");
+    const [status, setStatus] = useState("");
 
     const {register, formState: {errors}, getValues, handleSubmit} = useForm({
         mode: "onBlur" // "onChange"
     });
 
-    const onSubmit = (data) => {
-        alert(JSON.stringify(data));
+    const onSubmit = async (data) => {
+        let {status, message} = await Auth.register(data.username, data.email, data.password);
+        setMessage(message);
+        setStatus(status);
     };
 
     return (
         <div className="login-form bg-light mt-4 p-4">
             <form onSubmit={handleSubmit(onSubmit)} className="row g-3">
                 <h4 className={'text-center'}>Welcome</h4>
+
+                {(message && status === 'error') && (
+                    <div className="col-12">
+                        <div className="alert alert-danger" role="alert">
+                            <h4 className="alert-heading">Error!</h4>
+                            <p>{message}</p>
+                            <hr/>
+                            <p className="mb-0">
+                                Please fix all errors before continuing.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {(message && status === 'success') && (
+                    <div className="col-12">
+                        <div className="alert alert-success" role="alert">
+                            <h4 className="alert-heading">Well done!</h4>
+                            <p>{message}</p>
+                            <hr/>
+                            <p className="mb-0">
+                                Now you can login using your credential.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 <div className="col-6">
                     <label htmlFor={'username'}>Username</label>
                     <input {...register("username", {
