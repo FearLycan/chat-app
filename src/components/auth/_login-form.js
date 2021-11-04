@@ -1,18 +1,47 @@
-import React from "react";
+import React, {useState} from "react";
 import {useForm} from "react-hook-form";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
+import Auth from "../../services/auth";
 
 const Form = () => {
+    const [message, setMessage] = useState("");
+    const [status, setStatus] = useState("");
 
-    const {register, formState: {errors}, handleSubmit} = useForm();
-    const onSubmit = (data) => {
-        alert(JSON.stringify(data));
+    let history = useHistory();
+
+    const {register, formState: {errors}, getValues, handleSubmit} = useForm({
+        mode: "onBlur" // "onChange"
+    });
+
+    const onSubmit = async (data) => {
+        let {status, message} = await Auth.login(data.email, data.password);
+        setMessage(message);
+        setStatus(status);
+
+        if (status === 'success') {
+            history.push("/");
+            window.location.reload();
+        }
     };
 
     return (
         <div className="login-form bg-light mt-4 p-4">
             <form onSubmit={handleSubmit(onSubmit)} className="row g-3">
                 <h4 className={'text-center'}>Welcome Back</h4>
+
+                {(message && status === 'error') && (
+                    <div className="col-12">
+                        <div className="alert alert-danger" role="alert">
+                            <h4 className="alert-heading">Error!</h4>
+                            <p>{message}</p>
+                            <hr/>
+                            <p className="mb-0">
+                                Please fix all errors before continuing.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 <div className="col-12">
                     <label htmlFor={'email'}>E-mail</label>
                     <input {...register("email", {

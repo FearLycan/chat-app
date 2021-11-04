@@ -7,18 +7,23 @@ class Auth {
     static STATUS_ERROR = 'error';
     static STATUS_SUCCESS = 'success';
 
-    login(username, password) {
+    login(email, password) {
         return axios
             .post(API_URL + "login", {
-                username,
+                email,
                 password
             })
             .then(response => {
-                if (response.data.accessToken) {
-                    localStorage.setItem("user", JSON.stringify(response.data));
+                if (response.data.user.token) {
+                    localStorage.setItem("user", JSON.stringify({
+                        _id: response.data.user._id,
+                        username: response.data.user.username,
+                    }));
                 }
 
                 return response.data;
+            }).catch((error) => {
+                return error.response.data;
             });
     }
 
@@ -32,7 +37,6 @@ class Auth {
             email,
             password
         }).then((result) => {
-            console.log(result.data)
             return result.data;
         }).catch((error) => {
             return error.response.data;
